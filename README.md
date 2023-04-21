@@ -2,7 +2,7 @@
 
 # Проект Mesto фронтенд + бэкенд
 
-[Ссылка на репозиторий] https://github.com/RaibDev/express-mesto-gha
+[Ссылка на репозиторий ПР13] (https://github.com/RaibDev/express-mesto-gha)
 
 ## Директории
 

@@ -3,12 +3,12 @@ const express = require('express');
 const userRouter = express.Router();
 const User = require('../models/user');
 
-userRouter.get('/usres', (req, res) => {
+userRouter.get('/users', (req, res) => {
   res.send({ data: users });
 });
 
 userRouter.get('/users/:userId', (req, res) => {
-  const { userId } = req.body;
+  const { userId } = req.params;
   const user = users.find((user) => user.id === Number(userId));
   if (user) {
     res.send({ data: user })

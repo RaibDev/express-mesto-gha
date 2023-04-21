@@ -3,24 +3,19 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
     minLength: 2,
     maxLength: 30,
-    required: true,
   },
-  link: {
+  about: {
     type: String,
     required: true,
+    minLength: 2,
+    maxLength: 30,
   },
-  owner: {
-    type: ObjectId,
+  avatar: {
+    tupe: String,
     required: true,
-  },
-  likes: {
-    default: [],
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
   },
 });
 

@@ -4,4 +4,4 @@ const cardRouter = require('./cards');
 module.exports = {
   userRouter,
   cardRouter,
-}
+};

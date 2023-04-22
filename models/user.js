@@ -3,19 +3,19 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Пользователь должен иметь Имя'],
+    required: true,
     minLength: 2,
     maxLength: 30,
   },
   about: {
     type: String,
-    required: [true, 'У пользователя должно быть указано хобби'],
+    required: true,
     minLength: 2,
     maxLength: 30,
   },
   avatar: {
-    tupe: String,
-    required: [true, 'У пользователя должен быть аватар'],
+    type: String,
+    required: true,
   },
 });
 module.exports = mongoose.model('user', userSchema);

@@ -1,4 +1,6 @@
-const express = require('express');
+// const express = require('express');
+const userRouter = require('express').Router();
+
 const {
   getUsers,
   getUser,
@@ -6,8 +8,6 @@ const {
   updateUser,
   updateAvatar,
 } = require('../controllers/users');
-
-const userRouter = express.Router();
 
 userRouter.get('/users', getUsers);
 

@@ -2,8 +2,15 @@ const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
+    .orFail(() => {
+      throw new Error('Not found');
+    })
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => {
+      if (err == 'Not found') {
+        res.status(500).send({ message: `Произошла ошибка ${err}` });
+      }
+    });
 };
 
 const getUser = (req, res) => {
@@ -11,6 +18,9 @@ const getUser = (req, res) => {
   const user = users.find((user) => user._id === Number(userId)); // ????????????
   if (user) {
     User.findById(req.params.userId)
+      .orFail(() => {
+        throw new Error('Not found');
+      })
       .then((user) => res.send({ data: user }))
       .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
   } else {
@@ -21,6 +31,9 @@ const getUser = (req, res) => {
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
+    .orFail(() => {
+      throw new Error('Not found');
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
@@ -36,6 +49,9 @@ const updateUser = (req, res) => {
       upsert: true, // Если такого объекта нет - создадим его
     },
   )
+    .orFail(() => {
+      throw new Error('Not found');
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
@@ -51,6 +67,9 @@ const updateAvatar = (req, res) => {
       upsert: true,
     },
   )
+    .orFail(() => {
+      throw new Error('Not found');
+    })
     .then()
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };

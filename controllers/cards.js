@@ -2,6 +2,9 @@ const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
+    .orFail(() => {
+      throw new Error('Not found');
+    })
     .then((cards) => res.send({ data: cards }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
@@ -9,6 +12,9 @@ const getCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link })
+    .orFail(() => {
+      throw new Error('Not found');
+    })
     .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
@@ -18,6 +24,9 @@ const deleteCard = (req, res) => {
   const { card } = cards.find(card._id === cardId);
   if (card) {
     Card.findByIdAndRemove(req.params.cardId)
+      .orFail(() => {
+        throw new Error('Not found');
+      })
       .then(() => res.send({ message: 'Карточка удалена' }))
       .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
   } else {
@@ -31,6 +40,9 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.users._id } }, // Проверяет наличие id в массиве likes, и добавляет
     { new: true },
   )
+    .orFail(() => {
+      throw new Error('Not found');
+    })
     .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
@@ -41,6 +53,9 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // Удаляет id из likes
     { new: true },
   )
+    .orFail(() => {
+      throw new Error('Not found');
+    })
     .then((card) => res.send({ data: card }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };

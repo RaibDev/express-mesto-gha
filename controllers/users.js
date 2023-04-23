@@ -7,8 +7,16 @@ const getUsers = (req, res) => {
     })
     .then((users) => res.send({ data: users }))
     .catch((err) => {
-      if (err.name === 'Not found') {
-        res.status(500).send({ message: `Произошла ошибка ${err}` });
+      const message = Object.values(err.errors).map((error) => error.name).join('; ');
+      if (err.name === 'NotFound') {
+        res.status(404).send({ message });
+        return;
+      }
+
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message });
+      } else {
+        res.status(500).send({ message });
       }
     });
 };
@@ -81,7 +89,7 @@ const updateAvatar = (req, res) => {
     .orFail(() => {
       throw new Error('Not found');
     })
-    .then()
+    .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
 

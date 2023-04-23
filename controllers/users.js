@@ -43,7 +43,7 @@ const createUser = (req, res) => {
 };
 
 const updateUser = (req, res) => {
-  const { name, about } = req.params;
+  const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.params._id,
     { name, about },
@@ -57,11 +57,18 @@ const updateUser = (req, res) => {
       throw new Error('Not found');
     })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        const message = Object.values(err.errors).map((error) => error.name).join('; ');
+        res.status(400).send({ message });
+      } else {
+        res.status(500).send({ message: `Произошла ошибка ${err}` });
+      }
+    });
 };
 
 const updateAvatar = (req, res) => {
-  const { link } = req.params;
+  const { link } = req.body;
   User.findByIdAndUpdate(
     req.params._id,
     { link },

@@ -14,12 +14,12 @@ const getUsers = (req, res) => {
 
 const getUser = (req, res) => {
   // const { userId } = req.params;
-  // const user = users.find((user) => user._id === Number(userId)); // ????????????
+  // const user = users.find((user) => user._id === Number(userId));
   // if (user) {
   User.findById(req.params.userId)
-    // .orFail(() => {
-    //   throw new Error('Not found');
-    // })
+    .orFail(() => {
+      throw new Error('Not found');
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       const message = Object.values(err.errors).map((error) => error.name).join('; ');

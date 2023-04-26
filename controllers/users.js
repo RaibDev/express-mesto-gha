@@ -8,6 +8,21 @@ const getUsers = (req, res) => {
     .then((users) => res.send({ data: users }))
     .catch((err) => {
       const message = Object.values(err.errors).map((error) => error.name).join('; ');
+      res.status(500).send({ message });
+    });
+};
+
+const getUser = (req, res) => {
+  // const { userId } = req.params;
+  // const user = users.find((user) => user._id === Number(userId)); // ????????????
+  // if (user) {
+  User.findById(req.params.userId)
+    // .orFail(() => {
+    //   throw new Error('Not found');
+    // })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      const message = Object.values(err.errors).map((error) => error.name).join('; ');
       if (err.name === 'NotFound') {
         res.status(404).send({ message });
         return;
@@ -19,21 +34,6 @@ const getUsers = (req, res) => {
         res.status(500).send({ message });
       }
     });
-};
-
-const getUser = (req, res) => {
-  // const { userId } = req.params;
-  // const user = users.find((user) => user._id === Number(userId)); // ????????????
-  // if (user) {
-  User.findById(req.params.userId)
-    .orFail(() => {
-      throw new Error('Not found');
-    })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
-  // } else {
-  // res.send.status(404).send({ message: 'Пользователь с таким Id не найден' });
-  // }
 };
 
 const createUser = (req, res) => {
@@ -89,7 +89,7 @@ const updateAvatar = (req, res) => {
     .orFail(() => {
       throw new Error('Not found');
     })
-    .then((user) => res.send({ data: user }))
+    .then((newData) => res.send({ data: newData }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
 

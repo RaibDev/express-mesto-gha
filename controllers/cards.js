@@ -14,7 +14,14 @@ const createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => {
+      const message = Object.values(err.errors).map((error) => error.name).join('; ');
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message });
+      } else {
+        res.status(500).send({ message });
+      }
+    });
 };
 
 const deleteCard = (req, res) => {
@@ -26,7 +33,7 @@ const deleteCard = (req, res) => {
       throw new Error('Not found');
     })
     .then(() => res.send({ message: 'Карточка удалена' }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` }));
   // } else {
   // res.status(500).send({ message: 'Карточка с таким id не найдена' });
   // }
@@ -42,7 +49,7 @@ const likeCard = (req, res) => {
       throw new Error('Not found');
     })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` }));
 };
 
 const dislikeCard = (req, res) => {
@@ -55,7 +62,7 @@ const dislikeCard = (req, res) => {
       throw new Error('Not found');
     })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` }));
 };
 
 module.exports = {

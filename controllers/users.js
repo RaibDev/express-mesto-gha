@@ -2,9 +2,9 @@ const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
-    .orFail(() => {
-      throw new Error('Not found');
-    })
+    // .orFail(() => {
+    //   throw new Error('Not found');
+    // })
     .then((users) => res.send({ data: users }))
     .catch((err) => {
       const message = Object.values(err.errors).map((error) => error.name).join('; ');
@@ -17,10 +17,16 @@ const getUser = (req, res) => {
   // const user = users.find((user) => user._id === Number(userId));
   // if (user) {
   User.findById(req.params.userId)
-    .orFail(() => {
-      throw new Error('Not found');
+    // .orFail(() => {
+    //   throw new Error('Not found');
+    // })
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'This user not found' });
+      } else {
+        res.send({ data: user });
+      }
     })
-    .then((user) => res.send({ data: user }))
     .catch((err) => {
       const message = Object.values(err.errors).map((error) => error.name).join('; ');
       if (err.name === 'NotFound') {
@@ -61,10 +67,16 @@ const updateUser = (req, res) => {
       upsert: true, // Если такого объекта нет - создадим его
     },
   )
-    .orFail(() => {
-      throw new Error('Not found');
+    // .orFail(() => {
+    //   throw new Error('Not found');
+    // })
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'This user not found' });
+      } else {
+        res.send({ data: user });
+      }
     })
-    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const message = Object.values(err.errors).map((error) => error.name).join('; ');
@@ -86,10 +98,16 @@ const updateAvatar = (req, res) => {
       upsert: true,
     },
   )
-    .orFail(() => {
-      throw new Error('Not found');
+    // .orFail(() => {
+    //   throw new Error('Not found');
+    // })
+    .then((newData) => {
+      if (!newData) {
+        res.status(404).send({ message: 'This user not found' });
+      } else {
+        res.send({ data: newData });
+      }
     })
-    .then((newData) => res.send({ data: newData }))
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
 

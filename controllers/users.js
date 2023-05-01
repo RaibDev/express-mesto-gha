@@ -16,7 +16,7 @@ const getUser = (req, res) => {
   // const { userId } = req.params;
   // const user = users.find((user) => user._id === Number(userId));
   // if (user) {
-  User.findById(req.params.userId)
+  User.findById(req.params._id)
     // .orFail(() => {
     //   throw new Error('Not found');
     // })

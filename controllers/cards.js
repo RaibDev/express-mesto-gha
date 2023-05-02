@@ -91,7 +91,13 @@ const dislikeCard = (req, res) => {
         res.send({ data: card });
       }
     })
-    .catch((err) => res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Id isn`t correct' });
+      } else {
+        res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` });
+      }
+    });
 };
 
 module.exports = {

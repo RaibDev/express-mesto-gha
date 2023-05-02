@@ -76,7 +76,7 @@ const updateUser = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         const message = Object.values(err.errors).map((error) => error.name).join('; ');
         res.status(400).send({ message });
       } else {

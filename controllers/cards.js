@@ -63,7 +63,14 @@ const likeCard = (req, res) => {
         res.send({ data: card });
       }
     })
-    .catch((err) => res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => {
+      // const message = Object.values(err.errors).map((error) => error.name).join('; ');
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы неверные данные' });
+      } else {
+        res.status(500).send({ message: `Произошла ошибка ${err}` });
+      }
+    });
 };
 
 const dislikeCard = (req, res) => {

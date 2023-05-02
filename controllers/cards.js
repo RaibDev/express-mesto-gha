@@ -25,10 +25,10 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  // const { cardId } = req.params;
+  const { cardId } = req.params;
   // const { card } = cards.find(card._id === cardId);
   // if (card) {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findByIdAndRemove(cardId)
     // .orFail(() => {
     //   throw new Error('Not found');
     // })
@@ -39,10 +39,13 @@ const deleteCard = (req, res) => {
         res.send({ message: 'Карточка удалена' });
       }
     })
-    .catch((err) => res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` }));
-  // } else {
-  // res.status(500).send({ message: 'Карточка с таким id не найдена' });
-  // }
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы неверные данные' });
+      } else {
+        res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` });
+      }
+    });
 };
 
 const likeCard = (req, res) => {

@@ -48,12 +48,12 @@ const deleteCard = (req, res) => {
 const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.users._id } }, // Проверяет наличие id в массиве likes, и добавляет
+    { $addToSet: { likes: req.user._id } }, // Проверяет наличие id в массиве likes, и добавляет
     { new: true },
   )
-    .orFail(() => {
-      throw new Error('Not found');
-    })
+    // .orFail(() => {
+    //   throw new Error('Not found');
+    // })
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Id isn`t correct' });

@@ -16,7 +16,9 @@ const getUser = (req, res) => {
   // const { userId } = req.params;
   // const user = users.find((user) => user._id === Number(userId));
   // if (user) {
-  User.findById(req.params._id)
+  const { userId } = req.params;
+
+  User.findById({ _id: userId })
     // .orFail(() => {
     //   throw new Error('Not found');
     // })
@@ -28,17 +30,13 @@ const getUser = (req, res) => {
       }
     })
     .catch((err) => {
-      const message = Object.values(err.errors).map((error) => error.name).join('; ');
-      if (err.name === 'NotFound') {
-        res.status(404).send({ message });
-        return;
-      }
+      // const message = Object.values(err.errors).map((error) => error.name).join('; ');
 
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message });
-      } else {
-        res.status(500).send({ message });
-      }
+      // if (err.name === 'ValidationError') {
+      // res.status(400).send({ message: 'Неверные параметры запроса' });
+      // } else {
+      res.status(400).send({ message: `Произошла ошибка ${err}` });
+      // }
     });
 };
 
@@ -78,7 +76,7 @@ const updateUser = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         const message = Object.values(err.errors).map((error) => error.name).join('; ');
         res.status(400).send({ message });
       } else {
@@ -88,10 +86,10 @@ const updateUser = (req, res) => {
 };
 
 const updateAvatar = (req, res) => {
-  const { link } = req.body;
+  const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.params._id,
-    { link },
+    { avatar },
     {
       new: true,
       runValidators: true,

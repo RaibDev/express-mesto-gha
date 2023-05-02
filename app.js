@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const errors = require('celebrate');
+// const { errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 const router = require('./routes');
@@ -20,7 +20,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(router);
-app.use(errors());
+// app.use(errors());
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрошен неверный роут' });
 });

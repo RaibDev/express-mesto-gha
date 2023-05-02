@@ -46,9 +46,11 @@ const deleteCard = (req, res) => {
 };
 
 const likeCard = (req, res) => {
+  const { cardId } = req.params;
+  const { ownerCard } = req.user._id;
   Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // Проверяет наличие id в массиве likes, и добавляет
+    cardId,
+    { $addToSet: { likes: ownerCard } }, // Проверяет наличие id в массиве likes, и добавляет
     { new: true },
   )
     // .orFail(() => {
@@ -65,9 +67,11 @@ const likeCard = (req, res) => {
 };
 
 const dislikeCard = (req, res) => {
+  const { cardId } = req.params;
+  const ownerCard = req.user._id;
   Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } }, // Удаляет id из likes
+    cardId,
+    { $pull: { likes: ownerCard } }, // Удаляет id из likes
     { new: true },
   )
     // .orFail(() => {

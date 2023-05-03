@@ -2,11 +2,8 @@ const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
-    // .orFail(() => {
-    //   throw new Error('Not found');
-    // })
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 const createCard = (req, res) => {
@@ -19,19 +16,14 @@ const createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message });
       } else {
-        res.status(500).send({ message });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
 
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
-  // const { card } = cards.find(card._id === cardId);
-  // if (card) {
   Card.findByIdAndRemove(cardId)
-    // .orFail(() => {
-    //   throw new Error('Not found');
-    // })
     .then((data) => {
       if (!data) {
         res.status(404).send({ message: 'Id isn`t correct' });
@@ -43,7 +35,7 @@ const deleteCard = (req, res) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы неверные данные' });
       } else {
-        res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` });
+        res.status(err.statusCode).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -56,9 +48,6 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: ownerCard } }, // Проверяет наличие id в массиве likes, и добавляет
     { new: true },
   )
-    // .orFail(() => {
-    //   throw new Error('Not found');
-    // })
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Id isn`t correct' });
@@ -71,7 +60,7 @@ const likeCard = (req, res) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы неверные данные' });
       } else {
-        res.status(500).send({ message: `Произошла ошибка ${err}` });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -84,9 +73,6 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: ownerCard } }, // Удаляет id из likes
     { new: true },
   )
-    // .orFail(() => {
-    //   throw new Error('Not found');
-    // })
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Id isn`t correct' });
@@ -98,7 +84,7 @@ const dislikeCard = (req, res) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Id isn`t correct' });
       } else {
-        res.status(err.statusCode).send({ message: `Произошла ошибка ${err}` });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };

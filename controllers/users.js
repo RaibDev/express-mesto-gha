@@ -4,8 +4,9 @@ const User = require('../models/user');
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => {
+    .catch((err) => {
       // const message = Object.values(err.errors).map((error) => error.name).join('; ');
+      console.error(err.name);
       res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
@@ -93,7 +94,10 @@ const updateAvatar = (req, res) => {
         res.send({ data: newData });
       }
     })
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .catch((err) => {
+      console.error(err.name);
+      res.status(500).send({ message: 'На сервере произошла ошибка' });
+    });
 };
 
 module.exports = {

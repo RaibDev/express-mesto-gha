@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const cardSchema = new mongoose.Schema({
+const cardSchema = new mongoose.Schema({ // Создаем схему модели добавляемой карточки
   name: {
     type: String,
     minLength: 2,

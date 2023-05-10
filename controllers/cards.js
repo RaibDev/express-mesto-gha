@@ -1,12 +1,12 @@
 const Card = require('../models/card');
 
-const getCards = (req, res) => {
+const getCards = (req, res) => { // Получение карточек
   Card.find({})
     .then((cards) => res.send({ data: cards }))
     .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res) => { // Создаем картчку
   // const { _id } = req.user;
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
@@ -21,7 +21,7 @@ const createCard = (req, res) => {
     });
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res) => { // Удаляем карточку
   const { cardId } = req.params;
   Card.findByIdAndRemove(cardId)
     .then((data) => {
@@ -40,7 +40,7 @@ const deleteCard = (req, res) => {
     });
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res) => { // Постановка лайка
   const { cardId } = req.params;
   const { ownerCard } = req.user._id;
   Card.findByIdAndUpdate(
@@ -65,7 +65,7 @@ const likeCard = (req, res) => {
     });
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res) => { // Удаленеи лайка с карточки
   const { cardId } = req.params;
   const ownerCard = req.user._id;
   Card.findByIdAndUpdate(

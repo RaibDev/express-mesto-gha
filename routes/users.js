@@ -1,6 +1,6 @@
 const userRouter = require('express').Router();
 // eslint-disable-next-line import/no-extraneous-dependencies
-const celebrate = require('celebrate');
+const { celebrate } = require('celebrate');
 
 const {
   getUsers,

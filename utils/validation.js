@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const Joi = require('celebrate');
+const { Joi } = require('celebrate');
 const { regexUrl } = require('./constants');
 
 const createUserValidation = {

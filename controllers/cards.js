@@ -1,12 +1,12 @@
 const Card = require('../models/card');
 
-const getCards = (req, res) => { // Получение карточек
+const getCards = (req, res, next) => { // Получение карточек
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .catch(next);
 };
 
-const createCard = (req, res) => { // Создаем картчку
+const createCard = (req, res, next) => { // Создаем картчку
   // const { _id } = req.user;
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
@@ -15,18 +15,21 @@ const createCard = (req, res) => { // Создаем картчку
       const message = Object.values(err.errors).map((error) => error.name).join('; ');
       if (err.name === 'ValidationError') {
         res.status(400).send({ message });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
+      next(err);
     });
 };
 
-const deleteCard = (req, res) => { // Удаляем карточку
+const deleteCard = (req, res, next) => { // Удаляем карточку
   const { cardId } = req.params;
+  const ownerId = req.owner._id;
+  const userId = req.user._id;
   Card.findByIdAndRemove(cardId)
     .then((data) => {
       if (!data) {
         res.status(404).send({ message: 'Id isn`t correct' });
+      } else if (ownerId !== userId) {
+        throw new Error('Удалить карточку может только создавший её пользователь');
       } else {
         res.send({ message: 'Карточка удалена' });
       }
@@ -34,13 +37,12 @@ const deleteCard = (req, res) => { // Удаляем карточку
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы неверные данные' });
-      } else {
-        res.status(err.statusCode).send({ message: 'На сервере произошла ошибка' });
       }
+      next(err);
     });
 };
 
-const likeCard = (req, res) => { // Постановка лайка
+const likeCard = (req, res, next) => { // Постановка лайка
   const { cardId } = req.params;
   const { ownerCard } = req.user._id;
   Card.findByIdAndUpdate(
@@ -59,13 +61,12 @@ const likeCard = (req, res) => { // Постановка лайка
       // const message = Object.values(err.errors).map((error) => error.name).join('; ');
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы неверные данные' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
+      next(err);
     });
 };
 
-const dislikeCard = (req, res) => { // Удаленеи лайка с карточки
+const dislikeCard = (req, res, next) => { // Удаленеи лайка с карточки
   const { cardId } = req.params;
   const ownerCard = req.user._id;
   Card.findByIdAndUpdate(
@@ -83,9 +84,8 @@ const dislikeCard = (req, res) => { // Удаленеи лайка с карто
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Id isn`t correct' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
+      next(err);
     });
 };
 

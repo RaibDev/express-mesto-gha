@@ -5,17 +5,13 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const SECRET_KEY = require('../utils/constants');
 
-const getUsers = (req, res) => { // Метод запроса юзеров
+const getUsers = (req, res, next) => { // Метод запроса юзеров
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => {
-      // const message = Object.values(err.errors).map((error) => error.name).join('; ');
-      console.error(err.name);
-      res.status(500).send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
 };
 
-const getUser = (req, res) => { // Получение юзера по айди
+const getUser = (req, res, next) => { // Получение юзера по айди
   const { userId } = req.params;
 
   User.findById({ _id: userId })
@@ -29,13 +25,12 @@ const getUser = (req, res) => { // Получение юзера по айди
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Id isn`t correct' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
+      next(err);
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) { // Проверка наличия полей
@@ -57,13 +52,10 @@ const login = (req, res) => {
           res.send({ token });
         });
     })
-    .catch((err) => {
-      res.status(401).send({ message: 'Неверные логин или пароль' });
-      console.error(err.name);
-    });
+    .catch(next);
 };
 
-const createUser = (req, res) => { // Создание пользака
+const createUser = (req, res, next) => { // Создание пользователя
   const {
     name,
     about,
@@ -87,24 +79,23 @@ const createUser = (req, res) => { // Создание пользака
           email: newUser.email,
         }))
         .catch((err) => {
-          if (err.code === 11000) {
+          if (err.code === 11000) { // Проверяем, что пользователя с таким email нет в базе
             res.status(409).send({ message: 'Пользователь с таким email уже существует' });
             return;
           }
           if (err.name === 'ValidationError') {
             const message = Object.values(err.errors).map((error) => error.name).join('; ');
             res.status(400).send({ message });
-          } else {
-            res.status(500).send({ message: 'На сервере произошла ошибка' });
           }
+          next(err);
         });
     });
 };
 
-const updateUser = (req, res) => { // Обновление полей пользака
+const updateUser = (req, res, next) => { // Обновление полей пользователя
   const { name, about } = req.body;
   User.findByIdAndUpdate(
-    req.params._id,
+    req.user._id,
     { name, about },
     {
       new: true, // Возвращаем уже измененный объект
@@ -123,16 +114,15 @@ const updateUser = (req, res) => { // Обновление полей польз
       if (err.name === 'ValidationError') {
         const message = Object.values(err.errors).map((error) => error.name).join('; ');
         res.status(400).send({ message });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
+      next(err);
     });
 };
 
-const updateAvatar = (req, res) => { // Обновление аватара пользака
+const updateAvatar = (req, res, next) => { // Обновление аватара пользака
   const { avatar } = req.body;
   User.findByIdAndUpdate(
-    req.params._id,
+    req.user._id,
     { avatar },
     {
       new: true,
@@ -147,10 +137,7 @@ const updateAvatar = (req, res) => { // Обновление аватара по
         res.send({ data: newData });
       }
     })
-    .catch((err) => {
-      console.error(err.name);
-      res.status(500).send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
 };
 
 module.exports = {

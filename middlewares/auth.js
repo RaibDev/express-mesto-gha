@@ -1,13 +1,14 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = require('../utils/constants');
+const customErrors = require('../utils/errors/index');
 
 module.exports = (req, res, next) => {
   const { autorization } = req.headers;
 
   if (!autorization || autorization.startsWith('Bearer')) {
-    res.status(401).send({ message: 'Вы не авторизовались' });
-    return;
+    throw new customErrors.Unautorized('Вы не авторизовались');
+    // res.status(401).send({ message: 'Вы не авторизовались' });
+    // return;
   }
   const token = autorization.replace('Bearer ', '');
   let payload;

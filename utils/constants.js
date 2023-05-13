@@ -1,7 +1,7 @@
 const SECRET_KEY = 'Tegucigalpa';
 const regexUrl = /^(ftp|http|https):\/\/[^ "]+$/;
 
-exports.module = {
+module.exports = {
   SECRET_KEY,
   regexUrl,
 };

@@ -1,6 +1,7 @@
 const express = require('express');
-// eslint-disable-next-line import/no-extraneous-dependencies
-// const celebrate = require('celebrate');
+const { celebrate } = require('celebrate');
+
+const cardRouter = express.Router();
 
 const {
   getCards,
@@ -16,16 +17,14 @@ const {
   likeCardValidation,
 } = require('../utils/validation');
 
-const cardRouter = express.Router();
-
 cardRouter.get('/', getCards);
 
-cardRouter.post('/', createCardValidation, createCard);
+cardRouter.post('/', celebrate(createCardValidation), createCard);
 
-cardRouter.delete('/:cardId', deleteCardValidation, deleteCard);
+cardRouter.delete('/:cardId', celebrate(deleteCardValidation), deleteCard);
 
-cardRouter.put('/:cardId/likes', likeCardValidation, likeCard);
+cardRouter.put('/:cardId/likes', celebrate(likeCardValidation), likeCard);
 
-cardRouter.delete('/:cardId/likes', dislikeCard);
+cardRouter.delete('/:cardId/likes', celebrate(likeCardValidation), dislikeCard);
 
 module.exports = cardRouter;

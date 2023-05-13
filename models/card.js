@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const regex = require('../utils/constants');
 
 const cardSchema = new mongoose.Schema({ // Создаем схему модели добавляемой карточки
   name: {
@@ -10,6 +11,10 @@ const cardSchema = new mongoose.Schema({ // Создаем схему модел
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (link) => regex.test(link),
+      message: 'Некорректный адрес ссылки',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

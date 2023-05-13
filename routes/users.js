@@ -1,6 +1,5 @@
 const userRouter = require('express').Router();
-// eslint-disable-next-line import/no-extraneous-dependencies
-// const { celebrate } = require('celebrate');
+const { celebrate } = require('celebrate');
 
 const {
   getUsers,
@@ -17,12 +16,12 @@ const {
 
 userRouter.get('/', getUsers);
 
-userRouter.get('/:userId', getUserValidation, getUser);
+userRouter.get('/:userId', celebrate(getUserValidation), getUser);
 
 // userRouter.post('/', createUser);
 
-userRouter.patch('/me', updateUserValidation, updateUser);
+userRouter.patch('/me', celebrate(updateUserValidation), updateUser);
 
-userRouter.patch('/me/avatar', updateAvatarValidation, updateAvatar);
+userRouter.patch('/me/avatar', celebrate(updateAvatarValidation), updateAvatar);
 
 module.exports = userRouter;

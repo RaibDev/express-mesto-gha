@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const { customErrors } = require('../utils/errors/index');
 
 const getCards = (req, res, next) => { // Получение карточек
   Card.find({})
@@ -12,9 +13,10 @@ const createCard = (req, res, next) => { // Создаем картчку
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      const message = Object.values(err.errors).map((error) => error.name).join('; ');
+      // const message = Object.values(err.errors).map((error) => error.name).join('; ');
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message });
+        next(new customErrors.BadRequest('Переданы некорректные данные'));
+        // res.status(400).send({ message });
       }
       next(err);
     });
@@ -27,16 +29,18 @@ const deleteCard = (req, res, next) => { // Удаляем карточку
   Card.findByIdAndRemove(cardId)
     .then((data) => {
       if (!data) {
-        res.status(404).send({ message: 'Id isn`t correct' });
+        throw new customErrors.NotFound('Карточка с таким id не найдена');
+        // res.status(404).send({ message: 'Id isn`t correct' });
       } else if (ownerId !== userId) {
-        throw new Error('Удалить карточку может только создавший её пользователь');
+        throw new customErrors.Forbidden('Удалить карточку может только создавший её пользователь');
       } else {
         res.send({ message: 'Карточка удалена' });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы неверные данные' });
+        next(new customErrors.BadRequest('Переданы неверные данные'));
+        // res.status(400).send({ message: 'Переданы неверные данные' });
       }
       next(err);
     });
@@ -52,7 +56,8 @@ const likeCard = (req, res, next) => { // Постановка лайка
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Id isn`t correct' });
+        throw new customErrors.NotFound('Карточка с таким id не найдена');
+        // res.status(404).send({ message: 'Id isn`t correct' });
       } else {
         res.send({ data: card });
       }
@@ -60,7 +65,8 @@ const likeCard = (req, res, next) => { // Постановка лайка
     .catch((err) => {
       // const message = Object.values(err.errors).map((error) => error.name).join('; ');
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы неверные данные' });
+        next(new customErrors.BadRequest('Переданы неверные данные'));
+        // res.status(400).send({ message: 'Переданы неверные данные' });
       }
       next(err);
     });
@@ -76,14 +82,16 @@ const dislikeCard = (req, res, next) => { // Удаленеи лайка с ка
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Id isn`t correct' });
+        throw new customErrors.NotFound('Карточка с таким id не найдена');
+        // res.status(404).send({ message: 'Id isn`t correct' });
       } else {
         res.send({ data: card });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Id isn`t correct' });
+        next(new customErrors.BadRequest('Переданы неверные данные'));
+        // res.status(400).send({ message: 'Id isn`t correct' });
       }
       next(err);
     });

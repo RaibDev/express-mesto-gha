@@ -1,9 +1,8 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 const bcrypt = require('bcryptjs');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const SECRET_KEY = require('../utils/constants');
+const customErrors = require('../utils/errors/index');
 
 const getUsers = (req, res, next) => { // Метод запроса юзеров
   User.find({})
@@ -17,14 +16,16 @@ const getUser = (req, res, next) => { // Получение юзера по ай
   User.findById({ _id: userId })
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'This user not found' });
+        throw new customErrors.NotFound('Пользователь не найден');
+        // res.status(404).send({ message: 'This user not found' });
       } else {
         res.send({ data: user });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Id isn`t correct' });
+        next(new customErrors.BadRequest('Некорректный id пользователя'));
+        // res.status(400).send({ message: 'Id isn`t correct' });
       }
       next(err);
     });
@@ -34,62 +35,61 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) { // Проверка наличия полей
-    res.status(400).send({ message: 'Не передан пароль или email' });
-    return;
+    throw new customErrors.BadRequest('Не передан пароль или email');
+    // res.status(400).send({ message: 'Не передан пароль или email' });
+    // return;
   }
 
   User.findOne({ email }).select('+password') // Ищем пользователя в базе
     .then((user) => {
       if (!user) {
-        throw new Error('Неверные логин или пароль');
+        throw new customErrors.Unautorized('Неверные логин или пароль');
       }
       return bcrypt.compare(password, user.password) // Сверяем переданный пароль и хеш пароля
         .then((matched) => {
           if (!matched) {
-            throw new Error('Неверные логин или пароль');
+            next(new customErrors.Unautorized('Неверные логин или пароль'));
           }
           const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' }); // Создаем и передаем токен, он действует неделю
-          res.send({ token });
+          return res.send({ token });
         });
     })
     .catch(next);
 };
 
 const createUser = (req, res, next) => { // Создание пользователя
-  const {
-    name,
-    about,
-    avatar,
-    email,
-    password,
-  } = req.body;
-  bcrypt.hash(password, 10) // хэшируем пароль, используя "соль" = 10
+  bcrypt.hash(req.body.password, 10) // хэшируем пароль, используя "соль" = 10
     .then((hash) => {
       User.create({
-        name,
-        about,
-        avatar,
-        email,
+        email: req.body.email,
         password: hash, // Записываем хэш в базу
+        name: req.body.name,
+        about: req.body.about,
+        avatar: req.body.avatar,
       })
-        .then((newUser) => res.status(201).send({ // Вовзвращаем нового пользователя
-          name: newUser.name,
-          about: newUser.about,
-          avatar: newUser.avatar,
-          email: newUser.email,
-        }))
+        .then((newUser) => {
+          res.status(201).send({ // Вовзвращаем нового пользователя
+            name: newUser.name,
+            about: newUser.about,
+            avatar: newUser.avatar,
+            email: newUser.email,
+          });
+        })
         .catch((err) => {
           if (err.code === 11000) { // Проверяем, что пользователя с таким email нет в базе
-            res.status(409).send({ message: 'Пользователь с таким email уже существует' });
+            next(new customErrors.Conflict('Пользователь с таким email уже существует'));
+            // res.status(409).send({ message: 'Пользователь с таким email уже существует' });
             return;
           }
-          if (err.name === 'ValidationError') {
-            const message = Object.values(err.errors).map((error) => error.name).join('; ');
-            res.status(400).send({ message });
-          }
+          // if (err.name === 'ValidationError') {
+          //   next(new customErrors.BadRequest(''));
+          //   // const message = Object.values(err.errors).map((error) => error.name).join('; ');
+          //   // res.status(400).send({ message });
+          // }
           next(err);
         });
-    });
+    })
+    .catch(next);
 };
 
 const updateUser = (req, res, next) => { // Обновление полей пользователя
@@ -105,18 +105,20 @@ const updateUser = (req, res, next) => { // Обновление полей по
   )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'This user not found' });
+        throw new customErrors.BadRequest('Пользователь не найден');
+        // res.status(404).send({ message: 'This user not found' });
       } else {
         res.send({ data: user });
       }
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        const message = Object.values(err.errors).map((error) => error.name).join('; ');
-        res.status(400).send({ message });
-      }
-      next(err);
-    });
+    .catch(next);
+  //   (err) => {
+  //   if (err.name === 'ValidationError') {
+  //     const message = Object.values(err.errors).map((error) => error.name).join('; ');
+  //     res.status(400).send({ message });
+  //   }
+  //   next(err);
+  // });
 };
 
 const updateAvatar = (req, res, next) => { // Обновление аватара пользака
@@ -132,7 +134,8 @@ const updateAvatar = (req, res, next) => { // Обновление аватар�
   )
     .then((newData) => {
       if (!newData) {
-        res.status(404).send({ message: 'This user not found' });
+        throw new customErrors.BadRequest('Пользователь не найден');
+        // res.status(404).send({ message: 'This user not found' });
       } else {
         res.send({ data: newData });
       }

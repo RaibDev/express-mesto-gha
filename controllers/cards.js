@@ -40,7 +40,7 @@ const deleteCard = (req, res, next) => { // Удаляем карточку
         next(new Forbidden('Удалить карточку может только создавший её пользователь'));
         return;
       }
-      res.send({ message: 'Карточка удалена' });
+      res.status(200).send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {

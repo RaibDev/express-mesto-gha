@@ -115,47 +115,53 @@ const updateUser = (req, res, next) => { // Обновление полей по
     {
       new: true, // Возвращаем уже измененный объект
       runValidators: true, // Валидируем поля перед записью в БД
-      upsert: true, // Если такого объекта нет - создадим его
+      // upsert: true, // Если такого объекта нет - создадим его
     },
   )
     .then((user) => {
       if (!user) {
-        throw new customErrors.BadRequest('Пользователь не найден');
+        next(new customErrors.BadRequest('Пользователь не найден'));
         // res.status(404).send({ message: 'This user not found' });
       } else {
         res.send({ data: user });
       }
     })
-    .catch(next);
-  //   (err) => {
-  //   if (err.name === 'ValidationError') {
-  //     const message = Object.values(err.errors).map((error) => error.name).join('; ');
-  //     res.status(400).send({ message });
-  //   }
-  //   next(err);
-  // });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new customErrors.BadRequest('Переданы некорректные данные'));
+        return;
+      }
+      next(err);
+    });
 };
 
 const updateAvatar = (req, res, next) => { // Обновление аватара пользака
   const { avatar } = req.body;
   User.findByIdAndUpdate(
+    // req.user._id,
     req.user._id,
     { avatar },
     {
       new: true,
       runValidators: true,
-      upsert: true,
+      // upsert: true,
     },
   )
     .then((newData) => {
       if (!newData) {
-        throw new customErrors.BadRequest('Пользователь не найден');
+        next(new customErrors.BadRequest('Пользователь не найден'));
         // res.status(404).send({ message: 'This user not found' });
       } else {
         res.send({ data: newData });
       }
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new customErrors.BadRequest('Переданы некорректные данные'));
+        return;
+      }
+      next(err);
+    });
 };
 
 module.exports = {

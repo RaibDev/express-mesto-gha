@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const { regexUrl } = require('../utils/constants');
 
-// const regex = /^(ftp|http|https):\/\/[^ "]+$/;
-
 const userSchema = new mongoose.Schema({ // Создаем схему модели пользователя
   name: {
     type: String,

@@ -5,8 +5,9 @@ const cardRouter = require('./cards');
 const auth = require('../middlewares/auth');
 // const { createUserValidation, loginValidation } = require('../utils/constants');
 const { login, createUser } = require('../controllers/users');
+const { regexUrl } = require('../utils/constants');
 
-const regex = /^(ftp|http|https):\/\/[^ "]+$/;
+// const regex = /^(ftp|http|https):\/\/[^ "]+$/;
 
 // router.post('/signup', celebrate(createUserValidation), createUser);
 // router.post('/signin', celebrate(loginValidation), login);
@@ -28,7 +29,7 @@ router.post('/signup', celebrate({
     about: Joi.string().min(2).max(30).messages({
       'string.min': 'Пароль должен содержать не менее 8 символов',
     }),
-    avatar: Joi.string().pattern(regex).message('Ссылка на аватар введёна некорректно'),
+    avatar: Joi.string().pattern(regexUrl).message('Ссылка на аватар введёна некорректно'),
   }),
 }), createUser);
 

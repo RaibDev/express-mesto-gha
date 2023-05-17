@@ -2,9 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { SECRET_KEY } = require('../utils/constants');
-const customErrors = require('../utils/errors/index');
-
-// const SECRET_KEY = 'Tegucigalpa';
+const { customErrors } = require('../utils/errors/index');
 
 const getUsers = (req, res, next) => { // Метод запроса юзеров
   User.find({})
@@ -80,21 +78,29 @@ const createUser = (req, res, next) => { // Создание пользоват�
           });
         })
         .catch((err) => {
-          if (err.code === 11000) { // Проверяем, что пользователя с таким email нет в базе
+          console.log(err);
+          if (err.code === 11000) {
             next(new customErrors.Conflict('Пользователь с таким email уже существует'));
-            // res.status(409).send({ message: 'Пользователь с таким email уже существует' });
-            return;
           }
-          // if (err.name === 'ValidationError') {
-          //   next(new customErrors.BadRequest(''));
-          //   // const message = Object.values(err.errors).map((error) => error.name).join('; ');
-          //   // res.status(400).send({ message });
-          // }
-          console.error(err);
-          next(err);
         });
     })
     .catch(next);
+  //     .catch((err) => {
+  //       if (err.code === 11000) { // Проверяем, что пользователя с таким email нет в базе
+  //         next(new customErrors.Conflict('Пользователь с таким email уже существует'));
+  //         // res.status(409).send({ message: 'Пользователь с таким email уже существует' });
+  //         // return;
+  //       }
+  //       // if (err.name === 'ValidationError') {
+  //       //   next(new customErrors.BadRequest(''));
+  //       //   // res.status(400).send({ message });
+  //       // }
+  //       console.error(err);
+  //       next(err);
+  //     });
+  // })
+  // .catch(next);
+  // });
 };
 
 const updateUser = (req, res, next) => { // Обновление полей пользователя

@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-// const regex = require('../utils/constants');
+const { regexUrl } = require('../utils/constants');
 
-const regex = /^(ftp|http|https):\/\/[^ "]+$/;
+// const regex = /^(ftp|http|https):\/\/[^ "]+$/;
 
 const userSchema = new mongoose.Schema({ // Создаем схему модели пользователя
   name: {
@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({ // Создаем схему модел
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (link) => regex.test(link),
+      validator: (link) => regexUrl.test(link),
       message: 'Некорректный адрес ссылки',
     },
   },

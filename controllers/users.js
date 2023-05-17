@@ -31,6 +31,18 @@ const getUser = (req, res, next) => { // Получение юзера по ай
     });
 };
 
+const getMyInfo = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        next(new customErrors.NotFound('Пользователь по указанному _id не найден'));
+        return;
+      }
+      res.send({ user });
+    })
+    .catch(next);
+};
+
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
@@ -52,6 +64,7 @@ const login = (req, res, next) => {
           }
           console.log(user);
           const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' }); // Создаем и передаем токен, он действует неделю
+          console.log(token);
           return res.send({ token });
         });
     })
@@ -148,6 +161,7 @@ const updateAvatar = (req, res, next) => { // Обновление аватар�
 module.exports = {
   getUsers,
   getUser,
+  getMyInfo,
   login,
   createUser,
   updateUser,

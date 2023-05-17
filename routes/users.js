@@ -4,6 +4,7 @@ const { Joi, celebrate } = require('celebrate');
 const {
   getUsers,
   getUser,
+  getMyInfo,
   updateUser,
   updateAvatar,
 } = require('../controllers/users');
@@ -17,6 +18,7 @@ const {
 const regex = /^(ftp|http|https):\/\/[^ "]+$/;
 
 userRouter.get('/', getUsers);
+userRouter.get('/me', getMyInfo);
 
 userRouter.get('/:userId', celebrate({
   params: Joi.object({

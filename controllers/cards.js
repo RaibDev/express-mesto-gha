@@ -27,20 +27,20 @@ const createCard = (req, res, next) => { // Создаем картчку
 
 const deleteCard = (req, res, next) => { // Удаляем карточку
   const { cardId } = req.params;
-  const ownerId = req.owner._id;
+  // const ownerId = req.owner._id;
   const userId = req.user._id;
-  Card.findByIdAndRemove(cardId)
-    .then((data) => {
-      if (!data) {
+  Card.findById(cardId)
+    .then((cardData) => {
+      if (!cardData) {
         next(new NotFound('Карточка с таким id не найдена'));
-        return;
         // res.status(404).send({ message: 'Id isn`t correct' });
-      }
-      if (ownerId !== userId) {
+      } else {
+        const ownerId = cardData.owner.toString();
+        if (userId === ownerId) {
+          Card.deleteOne(cardData).then(() => res.status(200).send({ message: 'Карточка удалена' }));
+        }
         next(new Forbidden('Удалить карточку может только создавший её пользователь'));
-        return;
       }
-      res.status(200).send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {

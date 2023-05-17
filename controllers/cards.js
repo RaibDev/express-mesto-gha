@@ -37,7 +37,7 @@ const deleteCard = (req, res, next) => { // Удаляем карточку
       } else {
         const ownerId = cardData.owner.toString();
         if (userId === ownerId) {
-          Card.deleteOne(cardData).then(() => res.status(200).send({ message: 'Карточка удалена' }));
+          Card.deleteOne(cardId).then(() => res.status(200).send({ message: 'Карточка удалена' }));
         }
         next(new Forbidden('Удалить карточку может только создавший её пользователь'));
       }

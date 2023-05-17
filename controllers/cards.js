@@ -1,5 +1,8 @@
 const Card = require('../models/card');
-const customErrors = require('../utils/errors/index');
+// const customErrors = require('../utils/errors/index');
+const NotFound = require('../utils/errors/not-found-error');
+const BadRequest = require('../utils/errors/bad-request-error');
+const Forbidden = require('../utils/errors/forbidden-error');
 
 const getCards = (req, res, next) => { // Получение карточек
   Card.find({})
@@ -15,7 +18,7 @@ const createCard = (req, res, next) => { // Создаем картчку
     .catch((err) => {
       // const message = Object.values(err.errors).map((error) => error.name).join('; ');
       if (err.name === 'ValidationError') {
-        next(new customErrors.BadRequest('Переданы некорректные данные'));
+        next(new BadRequest('Переданы некорректные данные'));
         // res.status(400).send({ message });
       }
       next(err);
@@ -29,19 +32,19 @@ const deleteCard = (req, res, next) => { // Удаляем карточку
   Card.findByIdAndRemove(cardId)
     .then((data) => {
       if (!data) {
-        next(new customErrors.NotFound('Карточка с таким id не найдена'));
+        next(new NotFound('Карточка с таким id не найдена'));
         return;
         // res.status(404).send({ message: 'Id isn`t correct' });
       }
       if (ownerId !== userId) {
-        next(new customErrors.Forbidden('Удалить карточку может только создавший её пользователь'));
+        next(new Forbidden('Удалить карточку может только создавший её пользователь'));
         return;
       }
       res.send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new customErrors.BadRequest('Переданы неверные данные'));
+        next(new BadRequest('Переданы неверные данные'));
         return;
         // res.status(400).send({ message: 'Переданы неверные данные' });
       }
@@ -59,7 +62,7 @@ const likeCard = (req, res, next) => { // Постановка лайка
   )
     .then((card) => {
       if (!card) {
-        return next(new customErrors.NotFound('Карточка с таким id не найдена'));
+        return next(new NotFound('Карточка с таким id не найдена'));
         // res.status(404).send({ message: 'Id isn`t correct' });
       }
       return res.send({ data: card });
@@ -67,7 +70,7 @@ const likeCard = (req, res, next) => { // Постановка лайка
     .catch((err) => {
       // const message = Object.values(err.errors).map((error) => error.name).join('; ');
       if (err.name === 'CastError') {
-        next(new customErrors.BadRequest('Переданы неверные данные'));
+        next(new BadRequest('Переданы неверные данные'));
         // res.status(400).send({ message: 'Переданы неверные данные' });
       }
       next(err);
@@ -84,14 +87,14 @@ const dislikeCard = (req, res, next) => { // Удаленеи лайка с ка
   )
     .then((card) => {
       if (!card) {
-        return next(new customErrors.NotFound('Карточка с таким id не найдена'));
+        return next(new NotFound('Карточка с таким id не найдена'));
         // res.status(404).send({ message: 'Id isn`t correct' });
       }
       return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new customErrors.BadRequest('Переданы неверные данные'));
+        next(new BadRequest('Переданы неверные данные'));
         // res.status(400).send({ message: 'Id isn`t correct' });
       }
       next(err);

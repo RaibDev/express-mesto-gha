@@ -29,17 +29,20 @@ const deleteCard = (req, res, next) => { // Удаляем карточку
   Card.findByIdAndRemove(cardId)
     .then((data) => {
       if (!data) {
-        return next(new customErrors.NotFound('Карточка с таким id не найдена'));
+        next(new customErrors.NotFound('Карточка с таким id не найдена'));
+        return;
         // res.status(404).send({ message: 'Id isn`t correct' });
       }
       if (ownerId !== userId) {
-        return next(new customErrors.Forbidden('Удалить карточку может только создавший её пользователь'));
+        next(new customErrors.Forbidden('Удалить карточку может только создавший её пользователь'));
+        return;
       }
-      return res.send({ message: 'Карточка удалена' });
+      res.send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new customErrors.BadRequest('Переданы неверные данные'));
+        return;
         // res.status(400).send({ message: 'Переданы неверные данные' });
       }
       next(err);

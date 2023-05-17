@@ -29,13 +29,13 @@ const deleteCard = (req, res, next) => { // Удаляем карточку
   Card.findByIdAndRemove(cardId)
     .then((data) => {
       if (!data) {
-        throw new customErrors.NotFound('Карточка с таким id не найдена');
+        return next(new customErrors.NotFound('Карточка с таким id не найдена'));
         // res.status(404).send({ message: 'Id isn`t correct' });
-      } else if (ownerId !== userId) {
-        throw new customErrors.Forbidden('Удалить карточку может только создавший её пользователь');
-      } else {
-        res.send({ message: 'Карточка удалена' });
       }
+      if (ownerId !== userId) {
+        return next(new customErrors.Forbidden('Удалить карточку может только создавший её пользователь'));
+      }
+      return res.send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -56,11 +56,10 @@ const likeCard = (req, res, next) => { // Постановка лайка
   )
     .then((card) => {
       if (!card) {
-        throw new customErrors.NotFound('Карточка с таким id не найдена');
+        return next(new customErrors.NotFound('Карточка с таким id не найдена'));
         // res.status(404).send({ message: 'Id isn`t correct' });
-      } else {
-        res.send({ data: card });
       }
+      return res.send({ data: card });
     })
     .catch((err) => {
       // const message = Object.values(err.errors).map((error) => error.name).join('; ');
@@ -82,11 +81,10 @@ const dislikeCard = (req, res, next) => { // Удаленеи лайка с ка
   )
     .then((card) => {
       if (!card) {
-        throw new customErrors.NotFound('Карточка с таким id не найдена');
+        return next(new customErrors.NotFound('Карточка с таким id не найдена'));
         // res.status(404).send({ message: 'Id isn`t correct' });
-      } else {
-        res.send({ data: card });
       }
+      return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {

@@ -16,11 +16,10 @@ const getUser = (req, res, next) => { // Получение юзера по ай
   User.findById({ _id: userId })
     .then((user) => {
       if (!user) {
-        throw new customErrors.NotFound('Пользователь не найден');
+        return next(new customErrors.NotFound('Пользователь не найден'));
         // res.status(404).send({ message: 'This user not found' });
-      } else {
-        res.send({ data: user });
       }
+      return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -55,12 +54,12 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password') // Ищем пользователя в базе
     .then((user) => {
       if (!user) {
-        throw new customErrors.Unautorized('Неверные логин или пароль');
+        return next(new customErrors.Unautorized('Неверные логин или пароль'));
       }
       return bcrypt.compare(password, user.password) // Сверяем переданный пароль и хеш пароля
         .then((matched) => {
           if (!matched) {
-            next(new customErrors.Unautorized('Неверные логин или пароль'));
+            return next(new customErrors.Unautorized('Неверные логин или пароль'));
           }
           console.log(user);
           const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' }); // Создаем и передаем токен, он действует неделю

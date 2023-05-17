@@ -31,6 +31,7 @@ router.post('/signup', celebrate({
     avatar: Joi.string().pattern(regex).message('Ссылка на аватар введёна некорректно'),
   }),
 }), createUser);
+
 router.post('/signin', celebrate({
   body: Joi.object({
     email: Joi.string().required().email().messages({

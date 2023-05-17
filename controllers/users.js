@@ -79,17 +79,17 @@ const createUser = (req, res, next) => { // Создание пользоват�
           if (err.code === 11000) { // Проверяем, что пользователя с таким email нет в базе
             next(new customErrors.Conflict('Пользователь с таким email уже существует'));
             // res.status(409).send({ message: 'Пользователь с таким email уже существует' });
-            return;
+            // return;
           }
           // if (err.name === 'ValidationError') {
           //   next(new customErrors.BadRequest(''));
           //   // const message = Object.values(err.errors).map((error) => error.name).join('; ');
           //   // res.status(400).send({ message });
           // }
-          next(err);
+          // next(err);
         });
-    })
-    .catch(next);
+    });
+  // .catch(next);
 };
 
 const updateUser = (req, res, next) => { // Обновление полей пользователя

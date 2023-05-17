@@ -30,12 +30,6 @@ userRouter.get('/:userId', celebrate({
 
 userRouter.patch('/me', celebrate({
   body: Joi.object({
-    avatar: Joi.string().pattern(regex).message('Ссылка на аватар введёна некорректно'),
-  }),
-}), updateUser);
-
-userRouter.patch('/me/avatar', celebrate({
-  body: Joi.object({
     name: Joi.string().min(2).max(30).messages({
       'string.min': 'Поле "имя" должно содержать более 2х символов',
       'string.max': 'Поле "имя" не должно содержать более 30 знаков',
@@ -44,6 +38,12 @@ userRouter.patch('/me/avatar', celebrate({
       'string.min': 'Поле "сфера занятий" должно содержать более 2х символов',
       'string.max': 'Поле "сфера занятий" не должно содержать более 30 знаков',
     }),
+  }),
+}), updateUser);
+
+userRouter.patch('/me/avatar', celebrate({
+  body: Joi.object({
+    avatar: Joi.string().pattern(regex).message('Ссылка на аватар введёна некорректно'),
   }),
 }), updateAvatar);
 

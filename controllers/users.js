@@ -50,9 +50,8 @@ const login = (req, res, next) => {
           if (!matched) {
             next(new customErrors.Unautorized('Неверные логин или пароль'));
           }
-          // console.log(user);
+          console.log(user);
           const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' }); // Создаем и передаем токен, он действует неделю
-          console.log(token);
           return res.send({ token });
         });
     })
@@ -78,29 +77,21 @@ const createUser = (req, res, next) => { // Создание пользоват�
           });
         })
         .catch((err) => {
-          console.log(err);
-          if (err.code === 11000) {
+          if (err.code === 11000) { // Проверяем, что пользователя с таким email нет в базе
             next(new customErrors.Conflict('Пользователь с таким email уже существует'));
+            // res.status(409).send({ message: 'Пользователь с таким email уже существует' });
+            return;
           }
+          // if (err.name === 'ValidationError') {
+          //   next(new customErrors.BadRequest(''));
+          //   // const message = Object.values(err.errors).map((error) => error.name).join('; ');
+          //   // res.status(400).send({ message });
+          // }
+          console.error(err);
+          next(err);
         });
     })
     .catch(next);
-  //     .catch((err) => {
-  //       if (err.code === 11000) { // Проверяем, что пользователя с таким email нет в базе
-  //         next(new customErrors.Conflict('Пользователь с таким email уже существует'));
-  //         // res.status(409).send({ message: 'Пользователь с таким email уже существует' });
-  //         // return;
-  //       }
-  //       // if (err.name === 'ValidationError') {
-  //       //   next(new customErrors.BadRequest(''));
-  //       //   // res.status(400).send({ message });
-  //       // }
-  //       console.error(err);
-  //       next(err);
-  //     });
-  // })
-  // .catch(next);
-  // });
 };
 
 const updateUser = (req, res, next) => { // Обновление полей пользователя

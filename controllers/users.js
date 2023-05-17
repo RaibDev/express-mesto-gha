@@ -86,6 +86,7 @@ const createUser = (req, res, next) => { // Создание пользоват�
           //   // const message = Object.values(err.errors).map((error) => error.name).join('; ');
           //   // res.status(400).send({ message });
           // }
+          console.error(err);
           next(err);
         });
     })

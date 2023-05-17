@@ -1,8 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const SECRET_KEY = require('../utils/constants');
+const { SECRET_KEY } = require('../utils/constants');
 const customErrors = require('../utils/errors/index');
+
+// const SECRET_KEY = 'Tegucigalpa';
 
 const getUsers = (req, res, next) => { // Метод запроса юзеров
   User.find({})
@@ -50,7 +52,9 @@ const login = (req, res, next) => {
           if (!matched) {
             next(new customErrors.Unautorized('Неверные логин или пароль'));
           }
+          // console.log(user);
           const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' }); // Создаем и передаем токен, он действует неделю
+          console.log(token);
           return res.send({ token });
         });
     })

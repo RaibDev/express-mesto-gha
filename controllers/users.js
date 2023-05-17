@@ -90,8 +90,8 @@ const createUser = (req, res, next) => { // Создание пользоват�
           console.error(err);
           next(err);
         });
-    })
-    .catch(next);
+    });
+  // .catch(next);
 };
 
 const updateUser = (req, res, next) => { // Обновление полей пользователя

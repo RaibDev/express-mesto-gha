@@ -17,14 +17,13 @@ const getUser = (req, res, next) => { // Получение юзера по ай
     .then((user) => {
       if (!user) {
         return next(new customErrors.NotFound('Пользователь не найден'));
-        // res.status(404).send({ message: 'This user not found' });
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new customErrors.BadRequest('Некорректный id пользователя'));
-        // res.status(400).send({ message: 'Id isn`t correct' });
+        return;
       }
       next(err);
     });
@@ -47,8 +46,6 @@ const login = (req, res, next) => {
 
   if (!email || !password) { // Проверка наличия полей
     throw new customErrors.BadRequest('Не передан пароль или email');
-    // res.status(400).send({ message: 'Не передан пароль или email' });
-    // return;
   }
 
   User.findOne({ email }).select('+password') // Ищем пользователя в базе
@@ -91,19 +88,15 @@ const createUser = (req, res, next) => { // Создание пользоват�
         .catch((err) => {
           if (err.code === 11000) { // Проверяем, что пользователя с таким email нет в базе
             next(new customErrors.Conflict('Пользователь с таким email уже существует'));
-            // res.status(409).send({ message: 'Пользователь с таким email уже существует' });
             return;
           }
-          // if (err.name === 'ValidationError') {
-          //   next(new customErrors.BadRequest(''));
-          //   // const message = Object.values(err.errors).map((error) => error.name).join('; ');
-          //   // res.status(400).send({ message });
-          // }
-          console.error(err);
+          if (err.name === 'ValidationError') {
+            next(new customErrors.BadRequest('Переданы некорректные данные'));
+            return;
+          }
           next(err);
         });
     });
-  // .catch(next);
 };
 
 const updateUser = (req, res, next) => { // Обновление полей пользователя
@@ -114,13 +107,11 @@ const updateUser = (req, res, next) => { // Обновление полей по
     {
       new: true, // Возвращаем уже измененный объект
       runValidators: true, // Валидируем поля перед записью в БД
-      // upsert: true, // Если такого объекта нет - создадим его
     },
   )
     .then((user) => {
       if (!user) {
         next(new customErrors.BadRequest('Пользователь не найден'));
-        // res.status(404).send({ message: 'This user not found' });
       } else {
         res.send({ data: user });
       }
@@ -137,19 +128,16 @@ const updateUser = (req, res, next) => { // Обновление полей по
 const updateAvatar = (req, res, next) => { // Обновление аватара пользака
   const { avatar } = req.body;
   User.findByIdAndUpdate(
-    // req.user._id,
     req.user._id,
     { avatar },
     {
       new: true,
       runValidators: true,
-      // upsert: true,
     },
   )
     .then((newData) => {
       if (!newData) {
         next(new customErrors.BadRequest('Пользователь не найден'));
-        // res.status(404).send({ message: 'This user not found' });
       } else {
         res.send({ data: newData });
       }

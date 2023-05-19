@@ -7,8 +7,6 @@ module.exports = (req, res, next) => {
 
   if (!authorization || !authorization.startsWith('Bearer')) {
     return next(new customErrors.Unautorized('Вы не авторизовались'));
-    // res.status(401).send({ message: 'Вы не авторизовались' });
-    // return;
   }
   const token = authorization.replace('Bearer ', '');
   let payload;
@@ -17,7 +15,6 @@ module.exports = (req, res, next) => {
     console.log(payload);
   } catch (e) {
     return next(new customErrors.Unautorized('Вы не авторизовались'));
-    // res.status(401).send({ message: 'Вы не авторизовались' });
   }
   req.user = payload;
   return next();

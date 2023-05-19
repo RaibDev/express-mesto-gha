@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema({ // Создаем схему модел
   password: {
     type: String,
     required: true,
-    minLength: 8,
     select: false,
   },
 });

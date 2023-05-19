@@ -1,9 +1,8 @@
 const { Joi } = require('celebrate');
-// const { regex } = require('./constants');
-const regex = /^(ftp|http|https):\/\/[^ "]+$/;
+const { regexUrl } = require('../utils/constants');
 
 const createUserValidation = {
-  body: Joi.object({
+  body: Joi.object().keys({
     email: Joi.string().email().required().messages({
       'string.email': 'Введён некорректный email адрес',
       'string.empty': 'Поле email не должно быть пустым',
@@ -20,12 +19,12 @@ const createUserValidation = {
     about: Joi.string().min(2).max(30).messages({
       'string.min': 'Пароль должен содержать не менее 8 символов',
     }),
-    avatar: Joi.string().pattern(regex).message('Ссылка на аватар введёна некорректно'),
+    avatar: Joi.string().pattern(regexUrl).message('Ссылка на аватар введёна некорректно'),
   }),
 };
 
 const loginValidation = {
-  body: Joi.object({
+  body: Joi.object().keys({
     email: Joi.string().required().email().messages({
       'string.email': 'Введён некорректный email адрес',
       'string.empty': 'Поле email не должно быть пустым',
@@ -39,13 +38,13 @@ const loginValidation = {
 };
 
 const getUserValidation = {
-  params: Joi.object({
+  params: Joi.object().keys({
     userId: Joi.string().hex().length(24).message('Передан некорректный id пользователя'),
   }),
 };
 
 const updateUserValidation = {
-  body: Joi.object({
+  body: Joi.object().keys({
     name: Joi.string().min(2).max(30).messages({
       'string.min': 'Поле "имя" должно содержать более 2х символов',
       'string.max': 'Поле "имя" не должно содержать более 30 знаков',
@@ -58,13 +57,13 @@ const updateUserValidation = {
 };
 
 const updateAvatarValidation = {
-  body: Joi.object({
-    avatar: Joi.string().pattern(regex).message('Ссылка на аватар введёна некорректно'),
+  body: Joi.object().keys({
+    avatar: Joi.string().pattern(regexUrl).message('Ссылка на аватар введёна некорректно'),
   }),
 };
 
 const createCardValidation = {
-  body: Joi.object({
+  body: Joi.object().keys({
     name: Joi.string()
       .min(2)
       .max(30)
@@ -74,7 +73,7 @@ const createCardValidation = {
         'string.max': 'Поле "Название места" не должно содержать более 30 знаков',
         'any.required': 'Поле "Название места" не должно быть пустым',
       }),
-    link: Joi.string().pattern(regex).required().messages({
+    link: Joi.string().pattern(regexUrl).required().messages({
       'string.dataUri': 'Введена некорректная ссылка на картинку места',
       'any.required': 'Поле ссылки не должно быть пустым',
     }),
@@ -82,13 +81,13 @@ const createCardValidation = {
 };
 
 const deleteCardValidation = {
-  params: Joi.object({
+  params: Joi.object().keys({
     cardId: Joi.string().hex().length(24).message('Передан некорректный id карточки'),
   }),
 };
 
 const likeCardValidation = {
-  params: Joi.object({
+  params: Joi.object().keys({
     cardId: Joi.string().hex().length(24).message('Передан некорректный id карточки'),
   }),
 };
